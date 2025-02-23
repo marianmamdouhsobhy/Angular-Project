@@ -1,0 +1,45 @@
+<div class="container py-3 text-muted ">
+  <!-- search  -->
+  <!-- Search Component -->
+
+
+
+
+  <!-- Dropdown at the top -->
+  <!-- Dropdown for selecting posts per page -->
+  <div class="row">
+    <div class="col-lg-4
+ ">
+      <app-search (searchChange)="onSearch($event)"></app-search>
+    </div>
+    <div class="col-lg-4 offset-lg-4
+ ">
+      <div class="pagination-header d-flex align-items-center justify-content-end">
+        <label for="itemsPerPage">Posts per page : </label>
+
+        <select id="itemsPerPage" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange($event)"
+          class="form-select ms-2 w-25">
+
+          <option selected *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+
+        </select>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- Posts List -->
+  <div *ngFor="let post of displayedPosts">
+    <app-post [post]="post" [searchQuery]="searchQuery"></app-post>
+  </div>
+
+  <!-- Pagination at the bottom -->
+  <div class="pagination-footer">
+    <app-pagination [currentPage]="currentPage" [totalPages]="totalPages" (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </div>
+
+
+</div>

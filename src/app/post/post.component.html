@@ -1,0 +1,42 @@
+
+  <div class="container py-3 text-muted bg-white rounded my-3">
+    
+    <div class="d-flex align-items-center">
+        <div class="rounded-circle me-3"> 
+          <img [src]="post.userImg" class="rounded-circle img-thumbnai user-img">
+        </div>
+        <p [innerHTML]="highlightText(post.userName)" class="fs-4 text-capitalize mb-0"> {{ post.userName }}</p>
+      </div>
+      
+      <p [innerHTML]="highlightText(post.title)" class="pt-2 fs-5" >{{post.title}}</p>
+      <p [innerHTML]="highlightText(post.body)" class="pb-3 border-bottom">{{post.body}}</p>
+      <div class="m-2">
+        <div class="d-flex align-items-center justify-content-between p-3">
+            <h6>Comments:</h6>
+            <button *ngIf="post.comments.length > 1" (click)="AllComments = !AllComments" class="btn btn-link text-muted">
+                {{ AllComments ? 'See Less' : 'See All Comments' }}
+              </button>
+        </div>
+        
+        <div *ngFor="let comment of post.comments.slice(0, 1)" class="shadow-sm rounded p-3">
+            <app-comment [comment]="comment"></app-comment>
+          </div>
+        
+      </div>
+
+
+<!-- "See More" Button -->
+
+  
+  <!-- Display All Comments When Clicked -->
+  <div *ngIf="AllComments">
+    <div *ngFor="let comment of post.comments.slice(2)" class="shadow-sm rounded p-3">
+      <app-comment [comment]="comment"></app-comment>
+    </div>
+  </div>
+  </div>
+ 
+  
+
+  
+

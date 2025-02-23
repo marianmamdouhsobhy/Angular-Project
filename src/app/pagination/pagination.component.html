@@ -1,0 +1,16 @@
+
+
+
+  <div class="d-flex justify-content-center mt-3">
+    <button class="btn btn-secondary me-2" (click)="changePage(currentPage - 1)"[disabled]="currentPage === 1">
+        ⏪ Prev
+    </button>
+    <span class="align-self-center">
+        Page {{ currentPage }} of {{ totalPages }}
+    </span>
+    <button class="btn btn-secondary ms-2" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        Next ⏩
+    </button>
+</div>
+
+  

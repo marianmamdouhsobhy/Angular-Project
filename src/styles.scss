@@ -1,0 +1,50 @@
+/* You can add global styles to this file, and also import other style files */
+$mainBgColor:#f2f1f0;
+$lightbgColor:#424242;
+// $lightbgColor:#24baef;
+$bgTransperant:rgba(36,186,239,.6);
+
+$boxBackgroundcolor:#f4f2ee;
+ 
+
+
+
+body{
+    background-color: $mainBgColor;
+    
+}
+a{
+    font-size:16px ;
+}
+.brdr{
+    height: 1px;
+    background-color: $lightbgColor;
+}
+
+.light-bg{
+    background-color: $lightbgColor;
+}
+
+.box-bg{
+   background-color: $boxBackgroundcolor; 
+}
+
+
+// search highlight
+.highlight {
+    background-color: yellow;
+    font-weight: bold;
+    color: black;
+  }
+// mediaquerry start
+.w-50{
+@media (max-width: 768px) {
+    width: 75% !important;
+  }
+
+  @media (max-width: 480px) {
+    width: 90% !important;
+  }
+
+
+}
