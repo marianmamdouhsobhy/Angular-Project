@@ -12,7 +12,7 @@
             <input formControlName='email' class="form-control my-2 py-2 " type="text" id="email">
             <div *ngIf="loginForm.get('email')?.errors !=null && loginForm.get('email')?.touched" class="alert my-2 alert-danger">
                 <p class="mb-0 fs-6" *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</p>
-                <p class="mb-0 fs-6" *ngIf="loginForm.get('email')?.errors?.['email']">Should be email like 'Ahmed@gmail.com</p>
+                <p class="mb-0 fs-6" *ngIf="loginForm.get('email')?.errors?.['email']">Should be email like 'Ahmedgmail.com</p>
             </div>
         </div>
         <div class="form-group my-2">
