@@ -3,16 +3,17 @@
     
     <div class="d-flex align-items-center">
         <div class="rounded-circle me-3"> 
-          <img [src]="post.userImg" class="rounded-circle img-thumbnai user-img">
+          <img  *ngIf="post?.userImg" [src]="post.userImg" (error)="post.setDefaultImage($event)" class="rounded-circle img-thumbnai user-img">
         </div>
         <p [innerHTML]="highlightText(post.userName)" class="fs-4 text-capitalize mb-0"> {{ post.userName }}</p>
+        <!-- <button *ngIf="userRole === 'admin'">Delete Post</button> -->
       </div>
       
-      <p [innerHTML]="highlightText(post.title)" class="pt-2 fs-5" >{{post.title}}</p>
-      <p [innerHTML]="highlightText(post.body)" class="pb-3 border-bottom">{{post.body}}</p>
+      <p [innerHTML]="highlightText(post.title)" class="pt-2 px-2 fs-5" >{{post.title}}</p>
+      <p [innerHTML]="highlightText(post.body)" class="pb-3 px-2 border-bottom">{{post.body}}</p>
       <div class="m-2">
         <div class="d-flex align-items-center justify-content-between p-3">
-            <h6>Comments:</h6>
+            <h6 class="mb-0">Comments:</h6>
             <button *ngIf="post.comments.length > 1" (click)="AllComments = !AllComments" class="btn btn-link text-muted">
                 {{ AllComments ? 'See Less' : 'See All Comments' }}
               </button>

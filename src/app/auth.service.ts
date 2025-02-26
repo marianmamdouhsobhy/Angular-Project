@@ -1,18 +1,25 @@
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
+import {  Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
 
 
+interface DecodedUser {
+  id: number;
+  role: string;
+  name: string;  // Explicitly define the name
+  imgpath: string; // Explicitly define the image
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  currentUser=new BehaviorSubject(null);
-  private userRole: string | null = null;
-
+  currentUser = new BehaviorSubject<DecodedUser | null>(null); // Define type properly
+  userRoleSubject = new BehaviorSubject<string | null>(null);
+  userRole$ = this.userRoleSubject.asObservable();
+ 
   constructor(private _Httpclient:HttpClient, private _Router:Router) {
     if(localStorage.getItem('userToken')!=null){
       this.saveCurrentUser();
@@ -26,16 +33,16 @@ export class AuthService {
     let token:any=localStorage.getItem('userToken');
 
     if (token) {
-      const decodedToken: any = jwtDecode(token);
+      const decodedToken: DecodedUser = jwtDecode(token) as DecodedUser; 
+      console.log("Decoded Token:", decodedToken);
       this.currentUser.next(decodedToken);
-      this.userRole = decodedToken.role;  // Store user role
-      console.log(this.currentUser.value);
+      this.userRoleSubject.next(decodedToken.role);  // Store user role
+      console.log(this.userRoleSubject);
     }
-
-
-    // this.currentUser.next(jwtDecode(token));
-    // this.userRole = token.role;
-    // console.log(this.currentUser.value);
+    else {
+      this.currentUser.next(null);  // Emit null when no user is found
+      this.userRoleSubject.next(null);
+    }
   }
   register(formData:any):Observable<any>
   {
@@ -48,9 +55,9 @@ export class AuthService {
      return this._Httpclient.post('http://localhost:4000/login', formData);
 
   }
-  // login(formData:any): Observable<any> {
-  //   return this._Httpclient.post(`${this.'http://localhost:3000/users'}/login`, formData);
-  // }
+  setUserRole(role: string) {
+    this.userRoleSubject.next(role);
+  }
 
 
 logout(){

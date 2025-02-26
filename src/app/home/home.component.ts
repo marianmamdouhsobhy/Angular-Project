@@ -1,7 +1,9 @@
-import { Component,OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component,OnInit } from '@angular/core';
 import { PostsService } from '../posts.service';
 import { AuthService } from '../auth.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin,Subscription } from 'rxjs';
+import { FormGroup, FormControl, Validators,FormBuilder  } from '@angular/forms';
+
 
 
 
@@ -14,6 +16,11 @@ export class HomeComponent {
   posts: any[] = [];  
   users: any[] = [];
   comments: any[] = [];
+  
+  // user roles
+  userRole: string | null = null; // Allow null values
+  private subscription!: Subscription;
+  postForm: FormGroup;
 
   // pagination 
   displayedPosts: any[] = [];
@@ -24,20 +31,56 @@ export class HomeComponent {
 
   // search 
   // angularsearch
-  // filteredLocationList: HousingLocation[] = [];
+
   searchQuery: string = '';
   filteredPosts: any[] = [];
-  // filteredComments: any[] = [];
-  // filteredUsers: any[] = [];
-constructor(private PostsService:PostsService, private AuthService:AuthService)
+
+constructor(private PostsService:PostsService, private AuthService:AuthService, private fb:FormBuilder,private cdr: ChangeDetectorRef)
 {
-// angularsearch
-  // this.housingLocationList = this.housingService.getAllHousingLocations();
-  // this.filteredLocationList = this.housingLocationList;
+  this.postForm = new FormGroup({
+    title: new FormControl('', Validators.required),  // Ensure validation
+    body: new FormControl('', Validators.required)
+  });
 }
 ngOnInit(): void {
-
+  this.subscription = this.AuthService.userRole$.subscribe(role => {
+    this.userRole = role;
+  });
 this.loadData();
+// this.submitPost();
+}
+//submit post as an admin
+submitPost() {
+  if (this.postForm.invalid) {
+    console.error("Title and body are required!");
+    return;
+  }
+
+  const user = this.AuthService.currentUser.getValue(); // Get logged-in user
+  console.log("Logged-in User Data:", user);
+  if (!user) {
+    console.error("No logged-in user found!");
+    return;
+  }
+
+  const newPost = {
+    ...this.postForm.value,
+    id: this.posts.length + 1, // Temporary unique ID
+    userId: user.id,
+    userName: user.name,
+    userImg:user?.imgpath ? user.imgpath : 'assets/images/user-default.png', // Attach image
+    comments: [] // New posts start with no comments
+  };
+  console.log("New Post Data:", newPost);
+  this.posts.unshift(newPost); // Add new post at the beginning
+  this.filteredPosts = [...this.posts]; // Update displayed posts
+  this.attachUserAndCommentsToPosts(this.posts);
+  this.postForm.reset(); // Reset form after submission
+
+  this.cdr.markForCheck();
+  this.cdr.detectChanges(); // Ensure UI refresh
+this.updateDisplayedPosts();
+  console.log("New Post Added:", newPost);
 }
 
 loadData() {
@@ -70,6 +113,8 @@ loadData() {
     return this.AuthService.getUsers();
     
   }
+
+
   getPosts() {
     return this.PostsService.getPosts('postType');
   }
@@ -89,18 +134,24 @@ loadData() {
     // Ensure users array exists
     const usersArray = Array.isArray(this.users) ? this.users : [];
 
-    // Find user, ensuring IDs match correctly
-    const user = usersArray.find(u => +u.id === +post.userId);
+     // Find user by userId
+     const user = this.users.find(u => +u.id === +post.userId);
+
+     // Debugging: Log matched user
+    //  console.log(`Matched user for post ${post.id}:`, user);
 
     return {
       ...post,
       userName: user ? user.name : 'Unknown User',
-      userImg: user && user.imgpath ? user.imgpath : 'assets/images/user-default.png',
+     
+      userImg: user?.imgpath ? user.imgpath : 'assets/images/user-default.png',
       comments: this.comments.filter(c => c.postId === post.id)
     };
+    this.cdr.detectChanges(); // Force UI update
+
   });
 
-  console.log('Processed Posts:', this.posts);
+  // console.log('Processed Posts:', this.posts);
   this.filteredPosts = [...this.posts]; // Initially, filteredPosts is the same as posts
   this.updatePagination();
 }
@@ -146,6 +197,14 @@ onItemsPerPageChange(event: Event) {
   this.updatePagination();
 }
 
+  // roles destroy
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+  // to replace broken image
+  // setDefaultImage(event: any) {
+  //   event.target.src = 'assets/images/user-default.png';
+  // }
   
 }
 

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+// import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-post',
@@ -9,6 +10,9 @@ export class PostComponent {
 @Input() post:any;
 AllComments = false;
 @Input() searchQuery: string = '';
+ngOnInit() {
+  console.log("Post Image URL:", this.post.userImg);
+}
 
 showAllComments() {
     this.AllComments = !this.AllComments;
