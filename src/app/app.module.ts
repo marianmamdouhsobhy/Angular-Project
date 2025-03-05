@@ -21,6 +21,7 @@ import { CommentComponent } from './comment/comment.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { PhotoComponent } from './photo/photo.component';
 import { SearchComponent } from './search/search.component';
+import { SliceArrayPipe } from './pipes/slice-array.pipe';
 
 
 
@@ -29,20 +30,17 @@ import { SearchComponent } from './search/search.component';
     AppComponent,
     HomeComponent,
     AboutComponent,
-   
-   
     LoginComponent,
     NavbarComponent,
     RegisterComponent,
- 
     NotfoundComponent,
-   
     GalleryComponent,
         PostComponent,
         CommentComponent,
         PaginationComponent,
         PhotoComponent,
         SearchComponent,
+        SliceArrayPipe,
     
   ],
   imports: [

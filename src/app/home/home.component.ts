@@ -3,14 +3,15 @@ import { PostsService } from '../posts.service';
 import { AuthService } from '../auth.service';
 import { forkJoin,Subscription } from 'rxjs';
 import { FormGroup, FormControl, Validators,FormBuilder  } from '@angular/forms';
-
+import { SliceArrayPipe } from '../pipes/slice-array.pipe';
 
 
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  providers: [SliceArrayPipe]
 })
 export class HomeComponent {
   posts: any[] = [];  
@@ -35,7 +36,7 @@ export class HomeComponent {
   searchQuery: string = '';
   filteredPosts: any[] = [];
 
-constructor(private PostsService:PostsService, private AuthService:AuthService, private fb:FormBuilder,private cdr: ChangeDetectorRef)
+constructor(private PostsService:PostsService, private AuthService:AuthService, private fb:FormBuilder,private cdr: ChangeDetectorRef, private sliceArrayPipe: SliceArrayPipe)
 {
   this.postForm = new FormGroup({
     title: new FormControl('', Validators.required),  // Ensure validation
@@ -168,8 +169,8 @@ updateDisplayedPosts() {
   const sourceData = this.searchQuery ? this.filteredPosts : this.posts;
   const start = (this.currentPage - 1) * this.itemsPerPage;
   const end = start + this.itemsPerPage;
-  this.displayedPosts = this.filteredPosts.slice(start, end);;
-  // this.displayedPosts = this.filteredPosts.length ? this.filteredPosts.slice(start, end) : this.posts.slice(start, end);
+  // this.displayedPosts = this.filteredPosts.slice(start, end);
+  this.displayedPosts = this.sliceArrayPipe.transform(sourceData, start, end);
 }
 // Search logic
 onSearch(query: string) {
@@ -201,10 +202,7 @@ onItemsPerPageChange(event: Event) {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-  // to replace broken image
-  // setDefaultImage(event: any) {
-  //   event.target.src = 'assets/images/user-default.png';
-  // }
+ 
   
 }
 

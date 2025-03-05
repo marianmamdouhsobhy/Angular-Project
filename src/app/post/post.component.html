@@ -19,7 +19,7 @@
               </button>
         </div>
         
-        <div *ngFor="let comment of post.comments.slice(0, 1)" class="shadow-sm rounded p-3">
+        <div *ngFor="let comment of post.comments| sliceArray:0:1" class="shadow-sm rounded p-3">
             <app-comment [comment]="comment"></app-comment>
           </div>
         
@@ -31,7 +31,7 @@
   
   <!-- Display All Comments When Clicked -->
   <div *ngIf="AllComments">
-    <div *ngFor="let comment of post.comments.slice(2)" class="shadow-sm rounded p-3">
+    <div *ngFor="let comment of post.comments| sliceArray:1" class="shadow-sm rounded p-3">
       <app-comment [comment]="comment"></app-comment>
     </div>
   </div>

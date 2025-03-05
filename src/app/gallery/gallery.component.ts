@@ -1,12 +1,14 @@
 import { Component,OnInit } from '@angular/core';
 import { AlbumsService } from '../albums.service';
 import { AuthService } from '../auth.service';
+import { SliceArrayPipe } from '../pipes/slice-array.pipe';
 
 
 @Component({
   selector: 'app-gallery',
   templateUrl: './gallery.component.html',
-  styleUrls: ['./gallery.component.scss']
+  styleUrls: ['./gallery.component.scss'],
+  providers: [SliceArrayPipe]
 })
 export class GalleryComponent {
   albums:any[]=[];
@@ -32,7 +34,7 @@ newAlbum: any = { title: '' };
 showAddAlbumForm = false;
 
 
-  constructor(private _AlbumService:AlbumsService,private _AuthService: AuthService) {}
+  constructor(private _AlbumService:AlbumsService,private _AuthService: AuthService,private sliceArrayPipe: SliceArrayPipe) {}
 
   ngOnInit(): void {
     this.fetchAlbums();
@@ -57,7 +59,13 @@ showAddAlbumForm = false;
   fetchPhotos() {
     this._AlbumService.getPhotos('photos').subscribe((photos: any) => {
       this.albums.forEach(album => {
-        this.photos[album.id] = photos.filter((photo: { albumId: any }) => photo.albumId === album.id).slice(0, 5);
+        // this.photos[album.id] = photos.filter((photo: { albumId: any }) => photo.albumId === album.id).slice(0, 5);
+
+        this.photos[album.id] = this.sliceArrayPipe.transform(
+          photos.filter((photo: { albumId: any }) => photo.albumId === album.id),
+          0,
+          5
+        );
       });
     });
   }
@@ -95,8 +103,9 @@ showAddAlbumForm = false;
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     console.log(`Page: ${this.currentPage}, Start: ${start}, End: ${end}`);
-    this.displayedalbums = this.filteredAlbums.slice(start, end);
-    
+    // this.displayedalbums = this.filteredAlbums.slice(start, end);
+    this.displayedalbums = this.sliceArrayPipe.transform(this.filteredAlbums, start, end);
+
   }
   
   onPageChange(newPage: number) {
@@ -153,8 +162,8 @@ adjustPageAfterSearch() {
   const end = start + this.itemsPerPage;
 
   // If no results are on the current page, reset to the first page with results
-  const resultsOnCurrentPage = this.filteredAlbums.slice(start, end);
-  
+  // const resultsOnCurrentPage = this.filteredAlbums.slice(start, end);
+  const resultsOnCurrentPage =this.sliceArrayPipe.transform(this.filteredAlbums, start, end)
   if (resultsOnCurrentPage.length === 0 && this.filteredAlbums.length > 0) {
     // Reset to the first page with results
     this.currentPage = 1;
