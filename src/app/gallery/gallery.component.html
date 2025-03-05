@@ -3,7 +3,7 @@
     <div class="col-lg-4
  ">
       <app-search (searchChange)="onSearchChange($event)"></app-search>
-    
+
 
     </div>
     <div class="col-lg-4 offset-lg-4
@@ -21,7 +21,7 @@
     </div>
   </div>
   <!-- Dropdown for selecting posts per page -->
-  
+
 
 
 
@@ -62,12 +62,25 @@
 
           <!-- Album Title -->
           <div class="border-top p-2">
-            <h6  [innerHTML]="highlightText(album.title)" class="card-text">Album Title :<br> {{ album.title }}</h6>
+            <h6 [innerHTML]="highlightText(album.title)" class="card-text">Album Title :<br> {{ album.title }}</h6>
           </div>
         </div>
       </div>
     </div>
-  </div>  
+  </div>
+
+
+ <!-- Add Album Button (Admins Only) -->
+<!-- <button *ngIf="isAdmin"  (click)="openAddAlbumForm()">Add Album</button> -->
+
+<!-- Add Album Form (Visible When Button Clicked) -->
+<div *ngIf="showAddAlbumForm">
+  <input type="text" [(ngModel)]="newAlbum.title" placeholder="Album Title">
+  <button (click)="addAlbum()">Save Album</button>
+  <button (click)="showAddAlbumForm = false">Cancel</button>
+</div>
+  
+
   <app-photo [photo]="selectedPhoto" [isOpen]="isModalOpen">
   </app-photo>
   <!-- Pagination at the bottom -->

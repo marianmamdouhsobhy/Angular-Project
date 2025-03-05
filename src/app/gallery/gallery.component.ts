@@ -1,5 +1,7 @@
 import { Component,OnInit } from '@angular/core';
 import { AlbumsService } from '../albums.service';
+import { AuthService } from '../auth.service';
+
 
 @Component({
   selector: 'app-gallery',
@@ -25,8 +27,12 @@ filteredAlbums: any[] = [];
 selectedPhoto: any = null;
 isModalOpen: boolean = false;
 
+// Adding new album
+newAlbum: any = { title: '' };
+showAddAlbumForm = false;
 
-  constructor(private _AlbumService:AlbumsService) {}
+
+  constructor(private _AlbumService:AlbumsService,private _AuthService: AuthService) {}
 
   ngOnInit(): void {
     this.fetchAlbums();
@@ -34,9 +40,10 @@ isModalOpen: boolean = false;
 
  
   fetchAlbums() {
+    const storedAlbums = JSON.parse(localStorage.getItem('albums') || '[]');
     this._AlbumService.getAlbums('albums').subscribe((albums: any) => {
       console.log('Raw Albums from API:', albums); // ✅ Check API response
-      this.albums = albums;
+      this.albums = [...storedAlbums, ...albums]; 
       this.filterAlbums();
       this.updatePagination();
        // Apply filter after fetching albums
@@ -49,32 +56,42 @@ isModalOpen: boolean = false;
 
   fetchPhotos() {
     this._AlbumService.getPhotos('photos').subscribe((photos: any) => {
-      // console.log('Photos from API:', photos); // ✅ Log raw photos
-  
       this.albums.forEach(album => {
-        // console.log(`Filtering photos for album ID: ${album.id}`);
-  
-        let matchingPhotos = photos.filter((photo: { albumId: any; }) => {
-          // console.log(`Comparing: photo.albumId=${photo.albumId} with album.id=${album.id}`);
-          return photo.albumId === album.id;
-        });
-  
-        // console.log(`Matched Photos for album ${album.id}:`, matchingPhotos);
-  
-        this.photos[album.id] = matchingPhotos.slice(0, 5);
+        this.photos[album.id] = photos.filter((photo: { albumId: any }) => photo.albumId === album.id).slice(0, 5);
       });
-  
-      // console.log('Filtered Photos:', this.photos); // ✅ Log after filtering
     });
   }
-  
+  // add album
+  openAddAlbumForm() {
+    this.showAddAlbumForm = true;
+  }
+
+  addAlbum() {
+    if (!this.newAlbum.title.trim()) return;
+
+    const newAlbum = { id: Date.now(), title: this.newAlbum.title };
+    const storedAlbums = JSON.parse(localStorage.getItem('albums') || '[]');
+
+    storedAlbums.push(newAlbum);
+    localStorage.setItem('albums', JSON.stringify(storedAlbums));
+
+    this.albums.unshift(newAlbum);
+    this.filterAlbums();
+    this.updatePagination();
+
+    this.newAlbum.title = '';
+    this.showAddAlbumForm = false;
+  }
+
+
+
   updatePagination() {
     this.totalPages = Math.ceil(this.albums.length / this.itemsPerPage);
     this.updateDisplayedAlbums();
   }
   
   updateDisplayedAlbums() {
-    this.totalPages = Math.ceil(this.albums.length / this.itemsPerPage); 
+    // this.totalPages = Math.ceil(this.albums.length / this.itemsPerPage); 
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     console.log(`Page: ${this.currentPage}, Start: ${start}, End: ${end}`);

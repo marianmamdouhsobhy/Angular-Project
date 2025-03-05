@@ -3,14 +3,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import {  Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
+import { DecodedUser } from './models/decoded-user';
 
 
-interface DecodedUser {
-  id: number;
-  role: string;
-  name: string;  // Explicitly define the name
-  imgpath: string; // Explicitly define the image
-}
+
 
 @Injectable({
   providedIn: 'root'
